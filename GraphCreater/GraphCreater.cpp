@@ -26,9 +26,11 @@ BEGIN_MESSAGE_MAP(CGraphCreaterApp, CWinApp)
 	ON_COMMAND(ID_FILE_OPEN, &CWinApp::OnFileOpen)
 	// Стандартная команда настройки печати
 	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinApp::OnFilePrintSetup)
-//Команды выбора инструмента для рисования
+	//Команды выбора инструмента для рисования
 	ON_COMMAND(ID_Vertical, &CGraphCreaterApp::ChoseOfVertical)
 	ON_COMMAND(ID_EDGE, &CGraphCreaterApp::ChoseOfEdge)
+	ON_COMMAND(ID_CHANGENAME, &CGraphCreaterApp::ChangeName)
+	ON_COMMAND(ID_CREATEMATRIX, &CGraphCreaterApp::CreateMatrix)
 END_MESSAGE_MAP()
 
 
@@ -203,6 +205,12 @@ void CGraphCreaterApp::ChoseOfEdge() {
 AfxMessageBox(_T("Выбран режим грани"));
 #else
 #endif // DEBUG
+}
+void CGraphCreaterApp::ChangeName() {
+
+}
+void CGraphCreaterApp::CreateMatrix() {
+
 }
 
 // Обработчики сообщений CGraphCreaterApp

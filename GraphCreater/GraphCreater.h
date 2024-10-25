@@ -28,6 +28,8 @@ public:
 // Реализация
 	void ChoseOfVertical();
 	void ChoseOfEdge();
+	void ChangeName();
+	void CreateMatrix();
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
 };
