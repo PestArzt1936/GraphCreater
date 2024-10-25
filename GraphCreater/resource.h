@@ -7,8 +7,8 @@
 #define IDR_MAINFRAME                   128
 #define IDR_GraphCreaterTYPE            130
 #define ID_Vertical                     32773
-#define ID_EDGE                         32774
-#define ID_CHANGENAME                   32783
+#define ID_EDGE                        32774
+#define ID_CHANGENAME                  32783
 #define ID_CREATEMATRIX                 32784
 
 // Next default values for new objects
