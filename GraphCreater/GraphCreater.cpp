@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CGraphCreaterApp, CWinApp)
 	ON_COMMAND(ID_EDGE, &CGraphCreaterApp::ChoseOfEdge)
 	ON_COMMAND(ID_CHANGENAME, &CGraphCreaterApp::ChangeName)
 	ON_COMMAND(ID_CREATEMATRIX, &CGraphCreaterApp::CreateMatrix)
+	ON_COMMAND(ID_BUTTONCURSOR,&CGraphCreaterApp::ChoseOfMove)
 END_MESSAGE_MAP()
 
 
@@ -203,6 +204,16 @@ void CGraphCreaterApp::ChoseOfEdge() {
 	pDoc->ChosenType = 'E';
 #ifdef _DEBUG
 AfxMessageBox(_T("Выбран режим грани"));
+#else
+#endif // DEBUG
+}
+void CGraphCreaterApp::ChoseOfMove() {
+	CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
+	CGraphCreaterView* pView = (CGraphCreaterView*)pFrame->GetActiveView();
+	CGraphCreaterDoc* pDoc = pView->GetDocument();
+	pDoc->ChosenType = 'M';
+#ifdef _DEBUG
+	AfxMessageBox(_T("Выбран режим перемещения"));
 #else
 #endif // DEBUG
 }

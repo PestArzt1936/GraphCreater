@@ -71,7 +71,13 @@ void CGraphCreaterView::DrawArrow(CDC* pDC, CPoint* points) {
 	pDC->LineTo(Xn, Yn);
 }
 // Рисование CGraphCreaterView
-
+CString Convertio(std::string name) {
+	CString end;
+	for (auto i : name) {
+		end.Insert(0, i);
+	}
+	return end;
+}
 void CGraphCreaterView::OnDraw(CDC* pDC)
 {
 	CGraphCreaterDoc* pDoc = GetDocument();
@@ -88,6 +94,8 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	old_brush = pDC->SelectObject(&hBrush);
 	for (int i = 0; i < pDoc->Verticals.GetSize();i++) {
 		pDC->Ellipse(pDoc->Verticals[i].x-radius, pDoc->Verticals[i].y - radius, pDoc->Verticals[i].x + radius, pDoc->Verticals[i].y + radius);
+		CString name = Convertio(pDoc->Verticals[i].GetName());
+		pDC->TextOut(pDoc->Verticals[i].x-name.GetLength()*4, pDoc->Verticals[i].y + radius * 1.5, name, name.GetLength());
 	}
 	pDC->SelectObject(old_brush);
 	old_brush = nullptr;
@@ -97,17 +105,19 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	oldPen = pDC->SelectObject(&hPen);
 	for (int i = 0; i < pDoc->Edges.GetSize(); i++) {
 		CPoint points[2];
-		points[0].SetPoint(pDoc->Edges[i].verts[0].x, pDoc->Edges[i].verts[0].y);
-		points[1].SetPoint(pDoc->Edges[i].verts[1].x, pDoc->Edges[i].verts[1].y);
+		points[0].SetPoint(pDoc->Edges[i].verts[0]->x, pDoc->Edges[i].verts[0]->y);
+		points[1].SetPoint(pDoc->Edges[i].verts[1]->x, pDoc->Edges[i].verts[1]->y);
 		DrawArrow(pDC,points);
 	}
 	if (onDrawState) {
-		CPoint points[2];
-		points[0].x = temp.verts[0].x;
-		points[0].y = temp.verts[0].y;
-		points[1].x = temp.verts[1].x;
-		points[1].y = temp.verts[1].y;
-		DrawArrow(pDC,points);
+		if (pDoc->ChosenType == 'E') {
+			CPoint points[2];
+			points[0].x = temp.verts[0]->x;
+			points[0].y = temp.verts[0]->y;
+			points[1].x = temp.verts[1]->x;
+			points[1].y = temp.verts[1]->y;
+			DrawArrow(pDC, points);
+		}
 	}
 	DeleteObject(hBrush);
 	DeleteObject(hPen);
@@ -167,13 +177,24 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 		pDoc->Verticals.Add(vert);
 		Invalidate();
 	}
+	else if (pDoc->ChosenType=='M') {
+		for (int i = 0; i < pDoc->Verticals.GetSize();i++) {
+			if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x) && (pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y) && onDrawState == false) {
+				pDoc->temp = &pDoc->Verticals[i];
+				onDrawState = true;
+				Invalidate();
+				break;
+			}
+		}
+	}
 	else if(pDoc->ChosenType == 'E') {
 		Vertical* vert;
 		for (int i = 0; i < pDoc->Verticals.GetSize(); i++) {
 			if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x)&&(pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y)&&onDrawState==false) {
 				vert = &(pDoc->Verticals[i]);
-				temp.ReWriteFirst(*vert);
-				temp.AddConnection(*vert);
+				temp.ReWriteFirst(vert);
+				pDoc->Necessary = *vert;
+				temp.AddConnection(&pDoc->Necessary);
 				onDrawState = true;
 				Invalidate();
 				break;
@@ -189,19 +210,30 @@ void CGraphCreaterView::OnLButtonUp(UINT nFlags, CPoint point)
 	// TODO: добавьте свой код обработчика сообщений или вызов стандартного
 	if (onDrawState) {
 		auto pDoc = GetDocument();
-		Vertical* vert;
-		for (int i = 0; i < pDoc->Verticals.GetSize(); i++) {
-			if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x) && (pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y)) {
-				vert = &(pDoc->Verticals[i]);
-				temp.AddConnection(*vert);
-				pDoc->Edges.Add(temp);
-				onDrawState = false;
-				
-				break;
+		if (pDoc->ChosenType == 'E') {
+			Vertical* vert;
+			bool VertFound = false;
+			for (int i = 0; i < pDoc->Verticals.GetSize(); i++) {
+				if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x) && (pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y)) {
+					vert = &(pDoc->Verticals[i]);
+					temp.AddConnection(vert);
+					pDoc->Edges.Add(temp);
+					onDrawState = false;
+					VertFound = true;
+					break;
+				}
 			}
+			if (!VertFound) {
+				onDrawState = false;
+			}
+			pDoc->temp = nullptr;
 		}
+		else if (pDoc->ChosenType=='M') {
+			pDoc->temp = nullptr;
+			onDrawState = false;
+		}
+		Invalidate();
 	}
-	Invalidate();
 	CView::OnLButtonUp(nFlags, point);
 }
 
@@ -210,8 +242,15 @@ void CGraphCreaterView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: добавьте свой код обработчика сообщений или вызов стандартного
 	if (onDrawState) {
-		temp.verts[1].x = point.x;
-		temp.verts[1].y = point.y;
+		auto pDoc = GetDocument();
+		if (pDoc->ChosenType == 'E') {
+			temp.verts[1]->x = point.x;
+			temp.verts[1]->y = point.y;
+		}
+		else if (pDoc->ChosenType=='M') {
+			pDoc->temp->x = point.x;
+			pDoc->temp->y = point.y;
+		}
 		Invalidate();
 	}
 	CView::OnMouseMove(nFlags, point);

@@ -5,10 +5,10 @@ class Edge
 {
 	std::string name;
 public:
-	Vertical verts[2];
+	Vertical* verts[2];
 	Edge() {};
 	Edge(Vertical vert);
-	void AddConnection(Vertical vert);
-	void ReWriteFirst(Vertical vert);
+	void AddConnection(Vertical* vert);
+	void ReWriteFirst(Vertical* vert);
 };
 

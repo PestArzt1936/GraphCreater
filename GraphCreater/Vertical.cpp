@@ -12,6 +12,6 @@ void Vertical::ChangeCords(int x, int y) {
 	this->x = x;
 	this->y = y;
 }
-/*Vertical Vertical::operator=(Vertical vert) {
-
-}*/
+std::string Vertical::GetName() {
+	return this->name;
+}

@@ -14,7 +14,9 @@ protected: // создать только из сериализации
 
 // Атрибуты
 public:
-	char ChosenType = NULL;
+	char ChosenType = 'M';
+	Vertical Necessary;
+	Vertical* temp;
 	CArray<Vertical> Verticals;
 	CArray<Edge> Edges;
 // Операции
