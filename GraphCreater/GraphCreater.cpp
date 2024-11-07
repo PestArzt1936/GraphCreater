@@ -218,7 +218,14 @@ void CGraphCreaterApp::ChoseOfMove() {
 #endif // DEBUG
 }
 void CGraphCreaterApp::ChangeName() {
-
+	CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
+	CGraphCreaterView* pView = (CGraphCreaterView*)pFrame->GetActiveView();
+	CGraphCreaterDoc* pDoc = pView->GetDocument();
+	pDoc->ChosenType = 'С';
+#ifdef _DEBUG
+	AfxMessageBox(_T("Выбран режим перемещения"));
+#else
+#endif // DEBUG
 }
 void CGraphCreaterApp::CreateMatrix() {
 

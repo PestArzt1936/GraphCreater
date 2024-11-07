@@ -10,5 +10,7 @@ public:
 	Edge(Vertical vert);
 	void AddConnection(Vertical* vert);
 	void ReWriteFirst(Vertical* vert);
+	std::string GetName();
+	void ChangeName(std::string name);
 };
 

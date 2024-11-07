@@ -9,3 +9,9 @@ void Edge::AddConnection(Vertical* vert) {
 void Edge::ReWriteFirst(Vertical* vert) {
 	verts[0] = vert;
 }
+std::string Edge::GetName() {
+	return name;
+}
+void Edge::ChangeName(std::string name) {
+	this->name = name;
+}

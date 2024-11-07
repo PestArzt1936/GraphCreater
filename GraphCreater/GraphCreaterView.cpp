@@ -108,6 +108,10 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 		points[0].SetPoint(pDoc->Edges[i].verts[0]->x, pDoc->Edges[i].verts[0]->y);
 		points[1].SetPoint(pDoc->Edges[i].verts[1]->x, pDoc->Edges[i].verts[1]->y);
 		DrawArrow(pDC,points);
+		CString name = Convertio(pDoc->Edges[i].GetName());
+		int deltaX = pDoc->Edges[i].verts[0]->x - pDoc->Edges[i].verts[1]->x;
+		int deltaY= pDoc->Edges[i].verts[0]->y - pDoc->Edges[i].verts[1]->y;
+		pDC->TextOut(pDoc->Edges[i].verts[0]->x-deltaX/2 - name.GetLength() * 4, pDoc->Edges[i].verts[0]->y-deltaY/2 - radius * 2.0, name, name.GetLength());
 	}
 	if (onDrawState) {
 		if (pDoc->ChosenType == 'E') {
@@ -217,6 +221,7 @@ void CGraphCreaterView::OnLButtonUp(UINT nFlags, CPoint point)
 				if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x) && (pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y)) {
 					vert = &(pDoc->Verticals[i]);
 					temp.AddConnection(vert);
+					temp.ChangeName(std::to_string(pDoc->Edges.GetSize()+1)+'x');
 					pDoc->Edges.Add(temp);
 					onDrawState = false;
 					VertFound = true;
