@@ -33,6 +33,7 @@ public:
 
 // Реализация
 public:
+	void LoadVerticalsFromFile(const std::string& filename);
 	virtual ~CGraphCreaterDoc();
 #ifdef _DEBUG
 	virtual void AssertValid() const;

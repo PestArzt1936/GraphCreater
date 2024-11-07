@@ -8,7 +8,6 @@
 #include "afxdialogex.h"
 #include "GraphCreater.h"
 #include "MainFrm.h"
-
 #include "GraphCreaterDoc.h"
 #include "GraphCreaterView.h"
 
@@ -223,7 +222,7 @@ void CGraphCreaterApp::ChangeName() {
 	CGraphCreaterDoc* pDoc = pView->GetDocument();
 	pDoc->ChosenType = 'С';
 #ifdef _DEBUG
-	AfxMessageBox(_T("Выбран режим перемещения"));
+	AfxMessageBox(_T("Выбран режим изменения имени"));
 #else
 #endif // DEBUG
 }

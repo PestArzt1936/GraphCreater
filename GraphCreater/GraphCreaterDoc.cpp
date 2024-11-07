@@ -11,13 +11,16 @@
 #endif
 
 #include "GraphCreaterDoc.h"
-
+#include <nlohmann/json.hpp>
+#include <fstream>
 #include <propkey.h>
-
+#include "Vertical.h"
+#include <vector>
+#include "Edge.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
+#define file_name "Graphs.json"
 // CGraphCreaterDoc
 
 IMPLEMENT_DYNCREATE(CGraphCreaterDoc, CDocument)
@@ -49,11 +52,23 @@ BOOL CGraphCreaterDoc::OnNewDocument()
 	return TRUE;
 }
 
-
-
+void CGraphCreaterDoc::LoadVerticalsFromFile(const std::string& filename) {
+	std::ifstream file(filename);
+	if (!file.is_open()) {
+		throw std::runtime_error("Can't load file");
+	}
+	nlohmann::json j;
+	file >> j;
+	for (const auto& item : j["verticals"]) {
+		Vertical vertical;
+		vertical.ChangeName(item["name"]);
+		vertical.x = item["X"];
+		vertical.y = item["Y"];
+		Verticals.Add(vertical);
+	}
+}
 
 // Сериализация CGraphCreaterDoc
-
 void CGraphCreaterDoc::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
@@ -62,7 +77,9 @@ void CGraphCreaterDoc::Serialize(CArchive& ar)
 	}
 	else
 	{
-		// TODO: добавьте код загрузки
+		AfxMessageBox(_T("Попытка сериализации"));
+		Verticals.RemoveAll();
+		LoadVerticalsFromFile(file_name);
 	}
 }
 
