@@ -1,10 +1,11 @@
 ﻿
 // MainFrm.cpp: реализация класса CMainFrame
 //
-
+#pragma once
 #include "pch.h"
 #include "framework.h"
 #include "GraphCreater.h"
+#include "GraphCreaterView.h"
 #include <string>
 #include "MainFrm.h"
 
@@ -105,9 +106,12 @@ void CMainFrame::OnFileOpen()
 #else
 #endif
 	static TCHAR BASED_CODE szFilter[] = _T("Файл JSON|*.json|Все файлы (*.*)|*.*||");
-	//Продолжить
 	CFileDialog MyDialog(true, NULL, NULL, NULL, szFilter, NULL, 0, true);
 	if (MyDialog.DoModal() == IDOK) {
-
+//Продолжить
+		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
+		CGraphCreaterView* pView = (CGraphCreaterView*)pFrame->GetActiveView();
+		pView->GetDocument()->LoadVerticalsFromFile(CString(MyDialog.GetFileName()));
+		Invalidate();
 	}
 }

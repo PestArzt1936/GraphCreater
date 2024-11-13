@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "GraphCreaterDoc.h"
 
 class CGraphCreaterView : public CView
 {

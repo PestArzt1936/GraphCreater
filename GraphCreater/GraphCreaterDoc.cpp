@@ -52,11 +52,12 @@ BOOL CGraphCreaterDoc::OnNewDocument()
 	return TRUE;
 }
 
-void CGraphCreaterDoc::LoadVerticalsFromFile(const std::string& filename) {
+void CGraphCreaterDoc::LoadVerticalsFromFile(CString filename) {
 	std::ifstream file(filename);
 	if (!file.is_open()) {
 		throw std::runtime_error("Can't load file");
 	}
+	Verticals.RemoveAll();
 	nlohmann::json j;
 	file >> j;
 	for (const auto& item : j["verticals"]) {
@@ -79,7 +80,7 @@ void CGraphCreaterDoc::Serialize(CArchive& ar)
 	{
 		AfxMessageBox(_T("Попытка сериализации"));
 		Verticals.RemoveAll();
-		LoadVerticalsFromFile(file_name);
+		//LoadVerticalsFromFile(file_name);
 	}
 }
 

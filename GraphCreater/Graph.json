@@ -1,8 +1,8 @@
 {
     "verticals":[
     {"name":"Some","X":150,"Y":250},
-    {"name":"Tide","X":450,"Y":100},
-    {"name":"Force","X":350,"Y":500}
+    {"name":"Tide","X":1200,"Y":100},
+    {"name":"Force","X":650,"Y":500}
 ],
     "edges":[
         {"name":"x1","first":"Some","second":"Tide"},

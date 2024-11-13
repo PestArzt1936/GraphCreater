@@ -74,7 +74,7 @@ void CGraphCreaterView::DrawArrow(CDC* pDC, CPoint* points) {
 CString Convertio(std::string name) {
 	CString end;
 	for (auto i : name) {
-		end.Insert(0, i);
+		end.AppendChar(i);
 	}
 	return end;
 }
