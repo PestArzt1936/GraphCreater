@@ -34,6 +34,7 @@ public:
 // Реализация
 public:
 	void LoadVerticalsFromFile(CString filename);
+	void LoadEdgesFromFile(CString filename);
 	virtual ~CGraphCreaterDoc();
 #ifdef _DEBUG
 	virtual void AssertValid() const;

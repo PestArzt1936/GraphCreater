@@ -68,6 +68,35 @@ void CGraphCreaterDoc::LoadVerticalsFromFile(CString filename) {
 		Verticals.Add(vertical);
 	}
 }
+void CGraphCreaterDoc::LoadEdgesFromFile(CString filename) {
+	std::ifstream file(filename);
+	if (!file.is_open()) {
+		throw std::runtime_error("Can't load file");
+	}
+	Edges.RemoveAll();
+	nlohmann::json j;
+	file >> j;
+	for (const auto& item : j["edges"]) {
+		Edge edge;
+		edge.ChangeName(item["name"]);
+		Vertical* first=nullptr;
+		Vertical* second=nullptr;
+		for (int i = 0; i < Verticals.GetSize(); i++) { 
+			if (Verticals[i].GetName() == std::string(item["first"]))
+				first = &Verticals[i];
+			if (Verticals[i].GetName() == std::string(item["second"]))
+				second = &Verticals[i];
+		}
+		if (first == nullptr || second == nullptr) {
+			continue;
+		}
+		else{
+			edge.ReWriteFirst(first);
+			edge.AddConnection(second);
+			Edges.Add(edge);
+		}
+	}
+}
 
 // Сериализация CGraphCreaterDoc
 void CGraphCreaterDoc::Serialize(CArchive& ar)

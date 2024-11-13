@@ -112,6 +112,7 @@ void CMainFrame::OnFileOpen()
 		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
 		CGraphCreaterView* pView = (CGraphCreaterView*)pFrame->GetActiveView();
 		pView->GetDocument()->LoadVerticalsFromFile(CString(MyDialog.GetFileName()));
+		pView->GetDocument()->LoadEdgesFromFile(CString(MyDialog.GetFileName()));
 		Invalidate();
 	}
 }
