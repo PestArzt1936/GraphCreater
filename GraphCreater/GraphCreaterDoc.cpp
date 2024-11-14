@@ -30,6 +30,7 @@ BEGIN_MESSAGE_MAP(CGraphCreaterDoc, CDocument)
 	ON_COMMAND(ID_FILE_SAVE_AS, &CGraphCreaterDoc::OnFileSaveAs)
 	ON_COMMAND(ID_FILE_NEW,&CGraphCreaterDoc::OnFileNew)
 	ON_COMMAND(ID_FILE_CLOSE,&CGraphCreaterDoc::OnCloseDocument)
+	ON_COMMAND(ID_FILE_OPEN, &CGraphCreaterDoc::OnFileOpen)
 END_MESSAGE_MAP()
 
 
@@ -69,7 +70,6 @@ void CGraphCreaterDoc::LoadVerticalsFromFile(CString filename) {
 	if (!file.is_open()) {
 		throw std::runtime_error("Can't load file");
 	}
-	Verticals.RemoveAll();
 	nlohmann::json j;
 	file >> j;
 	for (const auto& item : j["verticals"]) {
@@ -77,7 +77,7 @@ void CGraphCreaterDoc::LoadVerticalsFromFile(CString filename) {
 		vertical.ChangeName(item["name"]);
 		vertical.x = item["X"];
 		vertical.y = item["Y"];
-		Verticals.Add(vertical);
+		Verticals.push_back(vertical);
 	}
 }
 void CGraphCreaterDoc::LoadEdgesFromFile(CString filename) {
@@ -85,7 +85,6 @@ void CGraphCreaterDoc::LoadEdgesFromFile(CString filename) {
 	if (!file.is_open()) {
 		throw std::runtime_error("Can't load file");
 	}
-	Edges.RemoveAll();
 	nlohmann::json j;
 	file >> j;
 	for (const auto& item : j["edges"]) {
@@ -93,7 +92,7 @@ void CGraphCreaterDoc::LoadEdgesFromFile(CString filename) {
 		edge.ChangeName(item["name"]);
 		Vertical* first=nullptr;
 		Vertical* second=nullptr;
-		for (int i = 0; i < Verticals.GetSize(); i++) { 
+		for (int i = 0; i < Verticals.size(); i++) { 
 			if (Verticals[i].GetName() == std::string(item["first"]))
 				first = &Verticals[i];
 			if (Verticals[i].GetName() == std::string(item["second"]))
@@ -105,7 +104,7 @@ void CGraphCreaterDoc::LoadEdgesFromFile(CString filename) {
 		else{
 			edge.ReWriteFirst(first);
 			edge.AddConnection(second);
-			Edges.Add(edge);
+			Edges.push_back(edge);
 		}
 	}
 }
@@ -157,10 +156,10 @@ void CGraphCreaterDoc::SaveToJSON(CString filename) {
 		nlohmann::json jsonData;
 		jsonData["verticals"] = nlohmann::json::array();
 		jsonData["edges"] = nlohmann::json::array();
-		for (int i = 0; i < Verticals.GetSize(); i++) {
+		for (int i = 0; i < Verticals.size(); i++) {
 			jsonData["verticals"].push_back({ {"name",Verticals[i].GetName()},{"X",Verticals[i].x},{"Y",Verticals[i].y} });
 		}
-		for (int i = 0; i < Edges.GetSize(); i++) {
+		for (int i = 0; i < Edges.size(); i++) {
 			jsonData["edges"].push_back({ {"name",Edges[i].GetName()},{"first",Edges[i].verts[0]->GetName()},{"second",Edges[i].verts[1]->GetName()} });
 		}
 		file << jsonData.dump(4);
@@ -176,16 +175,19 @@ void CGraphCreaterDoc::OnFileNew() {
 	AfxMessageBox(_T("CDoc"));
 	SaveAsk();
 	SetModifiedFlag(false);
-	for (int i = 0; i < Edges.GetSize(); i++) {
-		if(Edges[i].verts[0] != nullptr)
+	for (int i = 0; i < Edges.size(); i++) {
+		delete Edges[i].verts[0];
 		Edges[i].verts[0] = nullptr;
-		if (Edges[i].verts[1] != nullptr)
+		delete Edges[i].verts[1];
 		Edges[i].verts[1] = nullptr;
 	}
-	Edges.RemoveAll();
-	Verticals.RemoveAll();
+	Edges.clear();
+	Verticals.clear();
 	m_SavedFilePath = _T("");
 	CDocument::OnNewDocument();
+	Invalidate();
+}
+void CGraphCreaterDoc::Invalidate() {
 	POSITION pos = GetFirstViewPosition();
 	while (pos != nullptr) {
 		CView* pView = GetNextView(pos);
@@ -284,3 +286,21 @@ void CGraphCreaterDoc::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 // Команды CGraphCreaterDoc
+
+
+void CGraphCreaterDoc::OnFileOpen()
+{
+	// TODO: добавьте свой код обработчика команд
+#ifdef _DEBUG
+	AfxMessageBox(_T("Произошло открытие"));
+#else
+#endif
+	CFileDialog MyDialog(true, NULL, NULL, NULL, szFilter, NULL, 0, true);
+	if (MyDialog.DoModal() == IDOK) {
+		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
+		m_SavedFilePath = MyDialog.GetPathName();
+		LoadVerticalsFromFile(CString(MyDialog.GetPathName()));
+		LoadEdgesFromFile(CString(MyDialog.GetPathName()));
+		Invalidate();
+	}
+}

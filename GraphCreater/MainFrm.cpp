@@ -19,7 +19,6 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
-	ON_COMMAND(ID_FILE_OPEN, &CMainFrame::OnFileOpen)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -95,24 +94,3 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 
 // Обработчики сообщений CMainFrame
-
-
-
-void CMainFrame::OnFileOpen()
-{
-	// TODO: добавьте свой код обработчика команд
-#ifdef _DEBUG
-	AfxMessageBox(_T("Произошло открытие"));
-#else
-#endif
-	static TCHAR BASED_CODE szFilter[] = _T("Файл JSON(*.json)|*.json|Все файлы (*.*)|*.*||");
-	CFileDialog MyDialog(true, NULL, NULL, NULL, szFilter, NULL, 0, true);
-	if (MyDialog.DoModal() == IDOK) {
-		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
-		CGraphCreaterView* pView = (CGraphCreaterView*)pFrame->GetActiveView();
-		pView->GetDocument()->m_SavedFilePath = MyDialog.GetPathName();
-		pView->GetDocument()->LoadVerticalsFromFile(CString(MyDialog.GetPathName()));
-		pView->GetDocument()->LoadEdgesFromFile(CString(MyDialog.GetPathName()));
-		Invalidate();
-	}
-}

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Edge.h"
 Edge::Edge(Vertical vert){
+	verts[0] = nullptr;
+	verts[1] = nullptr;
 }
 
 void Edge::AddConnection(Vertical* vert) {

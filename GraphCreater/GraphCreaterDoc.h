@@ -5,6 +5,8 @@
 
 #pragma once
 #include "Edge.h"
+#include <deque>
+#include <vector>
 
 class CGraphCreaterDoc : public CDocument
 {
@@ -17,8 +19,8 @@ public:
 	char ChosenType = 'M';
 	Vertical Necessary;
 	Vertical* temp;
-	CArray<Vertical> Verticals;
-	CArray<Edge> Edges;
+	std::deque<Vertical> Verticals;
+	std::vector<Edge> Edges;
 	CString m_SavedFilePath;
 // Операции
 public:
@@ -38,6 +40,7 @@ public:
 	afx_msg void OnFileSaveAs();
 	afx_msg void OnFileNew();
 	afx_msg void OnCloseDocument();
+	void Invalidate();
 	void SaveAsk();
 	void Modified();
 	void SaveToJSON(CString filename);
@@ -60,4 +63,6 @@ protected:
 	// Вспомогательная функция, задающая содержимое поиска для обработчика поиска
 	void SetSearchContent(const CString& value);
 #endif // SHARED_HANDLERS
+public:
+	afx_msg void OnFileOpen();
 };

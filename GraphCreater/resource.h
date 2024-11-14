@@ -11,7 +11,6 @@
 #define ID_CHANGENAME                   32783
 #define ID_CREATEMATRIX                 32784
 #define ID_BUTTONCURSOR                 32785
-#define ID_CREATEFILE_NEW               32786
 
 // Next default values for new objects
 // 

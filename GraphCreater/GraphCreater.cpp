@@ -23,7 +23,6 @@ BEGIN_MESSAGE_MAP(CGraphCreaterApp, CWinApp)
 	// Стандартные команды по работе с файлами документов
 	ON_COMMAND(ID_FILE_NEW, &CWinApp::OnFileNew)
 	ON_COMMAND(ID_FILE_OPEN, &CWinApp::OnFileOpen)
-	//ON_COMMAND(ID_CREATEFILE_NEW,&CGraphCreaterDoc::OnFileNew)
 	// Стандартная команда настройки печати
 	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinApp::OnFilePrintSetup)
 	//Команды выбора инструмента для рисования

@@ -90,9 +90,9 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	CPoint ptr = pDC->GetWindowOrg();
 	CBrush hBrush;
 	CBrush* old_brush = nullptr;
-	hBrush.CreateSolidBrush(RGB(230, 30, 30));
+	hBrush.CreateSolidBrush(RGB(30, 30, 230));
 	old_brush = pDC->SelectObject(&hBrush);
-	for (int i = 0; i < pDoc->Verticals.GetSize();i++) {
+	for (int i = 0; i < pDoc->Verticals.size();i++) {
 		pDC->Ellipse(pDoc->Verticals[i].x-radius, pDoc->Verticals[i].y - radius, pDoc->Verticals[i].x + radius, pDoc->Verticals[i].y + radius);
 		CString name = Convertio(pDoc->Verticals[i].GetName());
 		pDC->TextOut(pDoc->Verticals[i].x-name.GetLength()*4, pDoc->Verticals[i].y + radius * 1.5, name, name.GetLength());
@@ -101,9 +101,9 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	old_brush = nullptr;
 	CPen hPen;
 	CPen* oldPen;
-	hPen.CreatePen(PS_SOLID, 2, RGB(230, 30, 30));
+	hPen.CreatePen(PS_SOLID, 2, RGB(30, 30, 230));
 	oldPen = pDC->SelectObject(&hPen);
-	for (int i = 0; i < pDoc->Edges.GetSize(); i++) {
+	for (int i = 0; i < pDoc->Edges.size(); i++) {
 		CPoint points[2];
 		points[0].SetPoint(pDoc->Edges[i].verts[0]->x, pDoc->Edges[i].verts[0]->y);
 		points[1].SetPoint(pDoc->Edges[i].verts[1]->x, pDoc->Edges[i].verts[1]->y);
@@ -176,14 +176,14 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 	// TODO: добавьте свой код обработчика сообщений или вызов стандартного
 	auto pDoc = GetDocument();
 	if (pDoc->ChosenType == 'V') {
-		std::string ss = std::to_string(pDoc->Verticals.GetSize()+1);
+		std::string ss = std::to_string(pDoc->Verticals.size()+1);
 		Vertical vert(ss, int(point.x), int(point.y));
-		pDoc->Verticals.Add(vert);
+		pDoc->Verticals.push_back(vert);
 		pDoc->Modified();
 		Invalidate();
 	}
 	else if (pDoc->ChosenType=='M') {
-		for (int i = 0; i < pDoc->Verticals.GetSize();i++) {
+		for (int i = 0; i < pDoc->Verticals.size();i++) {
 			if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x) && (pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y) && onDrawState == false) {
 				pDoc->temp = &pDoc->Verticals[i];
 				onDrawState = true;
@@ -194,7 +194,7 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 	}
 	else if(pDoc->ChosenType == 'E') {
 		Vertical* vert;
-		for (int i = 0; i < pDoc->Verticals.GetSize(); i++) {
+		for (int i = 0; i < pDoc->Verticals.size(); i++) {
 			if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x)&&(pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y)&&onDrawState==false) {
 				vert = &(pDoc->Verticals[i]);
 				temp.ReWriteFirst(vert);
@@ -218,12 +218,12 @@ void CGraphCreaterView::OnLButtonUp(UINT nFlags, CPoint point)
 		if (pDoc->ChosenType == 'E') {
 			Vertical* vert;
 			bool VertFound = false;
-			for (int i = 0; i < pDoc->Verticals.GetSize(); i++) {
+			for (int i = 0; i < pDoc->Verticals.size(); i++) {
 				if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x) && (pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y)) {
 					vert = &(pDoc->Verticals[i]);
 					temp.AddConnection(vert);
-					temp.ChangeName(std::to_string(pDoc->Edges.GetSize()+1)+'x');
-					pDoc->Edges.Add(temp);
+					temp.ChangeName('x' + std::to_string(pDoc->Edges.size() + 1));
+					pDoc->Edges.push_back(temp);
 					onDrawState = false;
 					pDoc->Modified();
 					VertFound = true;
