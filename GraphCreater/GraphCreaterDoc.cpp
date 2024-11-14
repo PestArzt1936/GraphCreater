@@ -29,7 +29,6 @@ BEGIN_MESSAGE_MAP(CGraphCreaterDoc, CDocument)
 	ON_COMMAND(ID_FILE_SAVE,&CGraphCreaterDoc::OnFileSave)
 	ON_COMMAND(ID_FILE_SAVE_AS, &CGraphCreaterDoc::OnFileSaveAs)
 	ON_COMMAND(ID_FILE_NEW,&CGraphCreaterDoc::OnFileNew)
-	ON_COMMAND(ID_FILE_CLOSE,&CGraphCreaterDoc::OnCloseDocument)
 	ON_COMMAND(ID_FILE_OPEN, &CGraphCreaterDoc::OnFileOpen)
 END_MESSAGE_MAP()
 
@@ -142,7 +141,10 @@ void CGraphCreaterDoc::OnFileSaveAs() {
 	CFileDialog MyDialog(false, NULL, m_SavedFilePath!=""?m_SavedFilePath:NULL, NULL, szFilter, NULL, 0, true);
 	if (MyDialog.DoModal() == IDOK) {
 		CString FileName= MyDialog.GetPathName();
-		FileName.Append(GetFilterType(MyDialog.GetOFN().nFilterIndex));
+		int check = FileName.Find(_T(".json"));
+		int size = FileName.GetLength();
+		if(check==-1 || FileName.GetLength()-4-1!=check)
+			FileName.Append(GetFilterType(MyDialog.GetOFN().nFilterIndex));
 		SaveToJSON(FileName);
 		m_SavedFilePath = FileName;
 	}
@@ -207,15 +209,6 @@ void CGraphCreaterDoc::SaveAsk() {
 		else
 			return;
 	}
-}
-void CGraphCreaterDoc::OnCloseDocument() {
-	if (IsModified()) {
-		if (AfxMessageBox(_T("Сохранить изменения?"), MB_YESNO | MB_ICONQUESTION) == IDYES) {
-			OnFileSave();
-		}
-		
-	}
-	CDocument::OnCloseDocument();
 }
 void CGraphCreaterDoc::ChangeWindowText(CString filename) {
 	int pos = filename.ReverseFind(_T('\\'));
@@ -313,4 +306,21 @@ void CGraphCreaterDoc::OnFileOpen()
 		ChangeWindowText(m_SavedFilePath);
 		Invalidate();
 	}
+}
+
+
+BOOL CGraphCreaterDoc::CanCloseFrame(CFrameWnd* pFrame)
+{
+	// TODO: добавьте специализированный код или вызов базового класса
+	if (IsModified()) {
+		int result = AfxMessageBox(_T("Сохранить изменения?"), MB_YESNOCANCEL | MB_ICONQUESTION);
+		if (result == IDYES) {
+			OnFileSave();
+		}
+		else if (result == IDNO)
+			return true;
+		else
+			return false;
+	}
+	return CDocument::CanCloseFrame(pFrame);
 }

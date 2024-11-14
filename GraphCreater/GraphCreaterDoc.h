@@ -39,7 +39,6 @@ public:
 	afx_msg void OnFileSave();
 	afx_msg void OnFileSaveAs();
 	afx_msg void OnFileNew();
-	afx_msg void OnCloseDocument();
 	void Invalidate();
 	void SaveAsk();
 	void ChangeWindowText(CString filename);
@@ -66,4 +65,5 @@ protected:
 #endif // SHARED_HANDLERS
 public:
 	afx_msg void OnFileOpen();
+	virtual BOOL CanCloseFrame(CFrameWnd* pFrame);
 };
