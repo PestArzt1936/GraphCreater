@@ -42,6 +42,7 @@ public:
 	afx_msg void OnCloseDocument();
 	void Invalidate();
 	void SaveAsk();
+	void ChangeWindowText(CString filename);
 	void Modified();
 	void SaveToJSON(CString filename);
 	CString GetFilterType(DWORD num);

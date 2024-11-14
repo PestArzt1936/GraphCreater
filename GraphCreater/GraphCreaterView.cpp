@@ -50,7 +50,6 @@ BOOL CGraphCreaterView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// TODO: изменить класс Window или стили посредством изменения
 	//  CREATESTRUCT cs
-
 	return CView::PreCreateWindow(cs);
 }
 void CGraphCreaterView::DrawArrow(CDC* pDC, CPoint* points) {
@@ -84,10 +83,6 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
-	LPCTSTR lpsz;
-	HWND* hWnd;
-	RECT rect;
-	CPoint ptr = pDC->GetWindowOrg();
 	CBrush hBrush;
 	CBrush* old_brush = nullptr;
 	hBrush.CreateSolidBrush(RGB(30, 30, 230));
@@ -263,3 +258,4 @@ void CGraphCreaterView::OnMouseMove(UINT nFlags, CPoint point)
 	}
 	CView::OnMouseMove(nFlags, point);
 }
+

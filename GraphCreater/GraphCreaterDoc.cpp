@@ -170,21 +170,21 @@ void CGraphCreaterDoc::SaveToJSON(CString filename) {
 		throw std::runtime_error("Unpredictable ERROR");
 	}
 	SetModifiedFlag(false);
+	ChangeWindowText(m_SavedFilePath);
 }
 void CGraphCreaterDoc::OnFileNew() {
 	AfxMessageBox(_T("CDoc"));
 	SaveAsk();
 	SetModifiedFlag(false);
-	for (int i = 0; i < Edges.size(); i++) {
-		delete Edges[i].verts[0];
+	for (int i = Edges.size()-1; i >= 0; i--) {
 		Edges[i].verts[0] = nullptr;
-		delete Edges[i].verts[1];
 		Edges[i].verts[1] = nullptr;
 	}
 	Edges.clear();
 	Verticals.clear();
 	m_SavedFilePath = _T("");
 	CDocument::OnNewDocument();
+	ChangeWindowText(m_SavedFilePath);
 	Invalidate();
 }
 void CGraphCreaterDoc::Invalidate() {
@@ -216,6 +216,15 @@ void CGraphCreaterDoc::OnCloseDocument() {
 		
 	}
 	CDocument::OnCloseDocument();
+}
+void CGraphCreaterDoc::ChangeWindowText(CString filename) {
+	int pos = filename.ReverseFind(_T('\\'));
+	if (pos != -1) {
+		filename = filename.Mid(pos + 1);
+	}
+	if (filename.GetLength()==0)
+		filename = _T("Без названия - GraphCreater");
+	AfxGetMainWnd()->SetWindowTextW(filename);
 }
 #ifdef SHARED_HANDLERS
 
@@ -299,8 +308,9 @@ void CGraphCreaterDoc::OnFileOpen()
 	if (MyDialog.DoModal() == IDOK) {
 		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
 		m_SavedFilePath = MyDialog.GetPathName();
-		LoadVerticalsFromFile(CString(MyDialog.GetPathName()));
-		LoadEdgesFromFile(CString(MyDialog.GetPathName()));
+		LoadVerticalsFromFile(m_SavedFilePath);
+		LoadEdgesFromFile(m_SavedFilePath);
+		ChangeWindowText(m_SavedFilePath);
 		Invalidate();
 	}
 }
