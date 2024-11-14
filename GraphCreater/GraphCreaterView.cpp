@@ -179,6 +179,7 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 		std::string ss = std::to_string(pDoc->Verticals.GetSize()+1);
 		Vertical vert(ss, int(point.x), int(point.y));
 		pDoc->Verticals.Add(vert);
+		pDoc->Modified();
 		Invalidate();
 	}
 	else if (pDoc->ChosenType=='M') {
@@ -224,6 +225,7 @@ void CGraphCreaterView::OnLButtonUp(UINT nFlags, CPoint point)
 					temp.ChangeName(std::to_string(pDoc->Edges.GetSize()+1)+'x');
 					pDoc->Edges.Add(temp);
 					onDrawState = false;
+					pDoc->Modified();
 					VertFound = true;
 					break;
 				}
@@ -235,6 +237,7 @@ void CGraphCreaterView::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 		else if (pDoc->ChosenType=='M') {
 			pDoc->temp = nullptr;
+			pDoc->Modified();
 			onDrawState = false;
 		}
 		Invalidate();

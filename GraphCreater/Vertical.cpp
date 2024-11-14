@@ -15,3 +15,5 @@ void Vertical::ChangeCords(int x, int y) {
 std::string Vertical::GetName() {
 	return this->name;
 }
+Vertical::~Vertical() {
+}

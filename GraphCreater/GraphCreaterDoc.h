@@ -19,6 +19,7 @@ public:
 	Vertical* temp;
 	CArray<Vertical> Verticals;
 	CArray<Edge> Edges;
+	CString m_SavedFilePath;
 // Операции
 public:
 
@@ -33,6 +34,14 @@ public:
 
 // Реализация
 public:
+	afx_msg void OnFileSave();
+	afx_msg void OnFileSaveAs();
+	afx_msg void OnFileNew();
+	afx_msg void OnCloseDocument();
+	void SaveAsk();
+	void Modified();
+	void SaveToJSON(CString filename);
+	CString GetFilterType(DWORD num);
 	void LoadVerticalsFromFile(CString filename);
 	void LoadEdgesFromFile(CString filename);
 	virtual ~CGraphCreaterDoc();

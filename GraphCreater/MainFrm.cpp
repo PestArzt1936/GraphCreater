@@ -105,14 +105,14 @@ void CMainFrame::OnFileOpen()
 	AfxMessageBox(_T("Произошло открытие"));
 #else
 #endif
-	static TCHAR BASED_CODE szFilter[] = _T("Файл JSON|*.json|Все файлы (*.*)|*.*||");
+	static TCHAR BASED_CODE szFilter[] = _T("Файл JSON(*.json)|*.json|Все файлы (*.*)|*.*||");
 	CFileDialog MyDialog(true, NULL, NULL, NULL, szFilter, NULL, 0, true);
 	if (MyDialog.DoModal() == IDOK) {
-//Продолжить
 		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
 		CGraphCreaterView* pView = (CGraphCreaterView*)pFrame->GetActiveView();
-		pView->GetDocument()->LoadVerticalsFromFile(CString(MyDialog.GetFileName()));
-		pView->GetDocument()->LoadEdgesFromFile(CString(MyDialog.GetFileName()));
+		pView->GetDocument()->m_SavedFilePath = MyDialog.GetPathName();
+		pView->GetDocument()->LoadVerticalsFromFile(CString(MyDialog.GetPathName()));
+		pView->GetDocument()->LoadEdgesFromFile(CString(MyDialog.GetPathName()));
 		Invalidate();
 	}
 }

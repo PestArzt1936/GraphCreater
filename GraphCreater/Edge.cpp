@@ -15,3 +15,7 @@ std::string Edge::GetName() {
 void Edge::ChangeName(std::string name) {
 	this->name = name;
 }
+Edge::~Edge() {
+	verts[0] = nullptr;
+	verts[1] = nullptr;
+}

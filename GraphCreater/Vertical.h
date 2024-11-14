@@ -5,6 +5,7 @@ class Vertical
 	std::string name;
 	
 public:
+	~Vertical();
 	int x, y;
 	Vertical() {};
 	Vertical(std::string,int x,int y);

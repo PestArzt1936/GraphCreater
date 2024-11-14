@@ -5,6 +5,7 @@ class Edge
 {
 	std::string name;
 public:
+	~Edge();
 	Vertical* verts[2];
 	Edge() {};
 	Edge(Vertical vert);
