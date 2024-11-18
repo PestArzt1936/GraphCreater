@@ -77,6 +77,28 @@ CString Convertio(std::string name) {
 	}
 	return end;
 }
+std::string ConvertioToSTD(CString name) {
+	std::string end;
+	for (int i = 0; i < name.GetLength();i++) {
+		end.push_back(name[i]);
+	}
+	return end;
+}
+std::wstring ToWString(std::string name) {
+	//Код ниже попытка отобразить русские символы тоже(неудачная попытка)
+	/*if (name.empty())
+		return std::wstring();
+	int utf16_length = MultiByteToWideChar(CP_UTF8, 0, name.data(), name.size(), NULL, 0);
+	if (utf16_length == 0)
+		throw std::runtime_error("Ошибка конвертации в UTF-16");
+	std::wstring utf16_string(utf16_length, 0);
+	MultiByteToWideChar(CP_UTF8, 0, name.data(), name.size(), &utf16_string[0], utf16_length);
+	return utf16_string;*/
+	std::vector<wchar_t> buffer(name.size() + 1);
+	mbstowcs(buffer.data(), name.c_str(), name.size() + 1);
+	std::wstring wstr(buffer.data());
+	return wstr;
+}
 void CGraphCreaterView::OnDraw(CDC* pDC)
 {
 	CGraphCreaterDoc* pDoc = GetDocument();
@@ -90,7 +112,8 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	for (int i = 0; i < pDoc->Verticals.size();i++) {
 		pDC->Ellipse(pDoc->Verticals[i].x-radius, pDoc->Verticals[i].y - radius, pDoc->Verticals[i].x + radius, pDoc->Verticals[i].y + radius);
 		CString name = Convertio(pDoc->Verticals[i].GetName());
-		pDC->TextOut(pDoc->Verticals[i].x-name.GetLength()*4, pDoc->Verticals[i].y + radius * 1.5, name, name.GetLength());
+		RECT rect = { pDoc->Verticals[i].x-name.GetLength() * 4,pDoc->Verticals[i].y + radius * 1.5,pDoc->Verticals[i].x+name.GetLength() * 4,pDoc->Verticals[i].y + radius * 1.5+20 };
+		pDC->DrawText(ToWString(pDoc->Verticals[i].GetName()).c_str(), pDoc->Verticals[i].GetName().size(), &rect, DT_CENTER);
 	}
 	pDC->SelectObject(old_brush);
 	old_brush = nullptr;
@@ -201,6 +224,26 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 			}
 		}	
 	}
+	else if (pDoc->ChosenType=='C') {
+		if (m_edit.GetSafeHwnd() != nullptr){
+				m_edit.DestroyWindow();
+			}
+		for (int i = 0; i < pDoc->Verticals.size();i++) {
+			RECT rect = { pDoc->Verticals[i].x - pDoc->Verticals[i].GetName().size() * 4,pDoc->Verticals[i].y + radius * 1.5,pDoc->Verticals[i].x + pDoc->Verticals[i].GetName().size() * 4,pDoc->Verticals[i].y + radius * 1.5 + 20};
+			if (PtInRect(&rect, point)) {
+					pDoc->temp = &pDoc->Verticals[i];
+					rect.left = rect.left - 20;
+					rect.right = rect.right + 20;
+					m_edit.Create(WS_CHILDWINDOW | WS_VISIBLE | ES_CENTER | WS_BORDER, rect, this, 5);
+					m_edit.SetWindowText(ToWString(pDoc->Verticals[i].GetName()).c_str());
+					m_edit.SetFocus();
+					m_edit.SetOwner(this);
+					m_edit.SetDlgCtrlID(5);
+					Invalidate();	
+				break;
+			}
+		}
+	}
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -259,3 +302,26 @@ void CGraphCreaterView::OnMouseMove(UINT nFlags, CPoint point)
 	CView::OnMouseMove(nFlags, point);
 }
 
+BOOL CGraphCreaterView::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: добавьте специализированный код или вызов базового класса
+	if (pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE)) {
+		CGraphCreaterDoc* pDoc = GetDocument();
+		if (pMsg->wParam == VK_RETURN) {
+			if (m_edit.GetSafeHwnd() != nullptr) {
+				CString text;
+				m_edit.GetWindowText(text);
+				pDoc->temp->ChangeName(ConvertioToSTD(text));
+				m_edit.DestroyWindow();
+				pDoc->temp = nullptr;
+			}
+		}
+		else if (pMsg->wParam == VK_ESCAPE) {
+			if (m_edit.GetSafeHwnd() != nullptr) {
+				m_edit.DestroyWindow();
+			}
+		}
+		return true;
+	}
+	return CView::PreTranslateMessage(pMsg);
+}

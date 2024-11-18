@@ -11,7 +11,7 @@ class CGraphCreaterView : public CView
 protected: // создать только из сериализации
 	CGraphCreaterView() noexcept;
 	DECLARE_DYNCREATE(CGraphCreaterView)
-
+	CEdit m_edit;
 // Атрибуты
 public:
 	CGraphCreaterDoc* GetDocument() const;
@@ -45,6 +45,7 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
 
 #ifndef _DEBUG  // версия отладки в GraphCreaterView.cpp
