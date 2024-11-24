@@ -112,9 +112,6 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	old_brush = pDC->SelectObject(&hBrush);
 	for (int i = 0; i < pDoc->Verticals.size();i++) {
 		pDC->Ellipse(pDoc->Verticals[i].x-radius, pDoc->Verticals[i].y - radius, pDoc->Verticals[i].x + radius, pDoc->Verticals[i].y + radius);
-		CString name = Convertio(pDoc->Verticals[i].GetName());
-		RECT rect = { pDoc->Verticals[i].x-name.GetLength() * 4,pDoc->Verticals[i].y + radius * 1.5,pDoc->Verticals[i].x+name.GetLength() * 4,pDoc->Verticals[i].y + radius * 1.5+20 };
-		pDC->DrawText(ToWString(pDoc->Verticals[i].GetName()).c_str(), pDoc->Verticals[i].GetName().size(), &rect, DT_CENTER);
 	}
 	pDC->SelectObject(old_brush);
 	old_brush = nullptr;
@@ -130,7 +127,12 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 		CString name = Convertio(pDoc->Edges[i].GetName());
 		int deltaX = pDoc->Edges[i].verts[0]->x - pDoc->Edges[i].verts[1]->x;
 		int deltaY= pDoc->Edges[i].verts[0]->y - pDoc->Edges[i].verts[1]->y;
-		pDC->TextOut(pDoc->Edges[i].verts[0]->x-deltaX/2 - name.GetLength() * 4, pDoc->Edges[i].verts[0]->y-deltaY/2 - radius * 2.0, name, name.GetLength());
+		pDC->TextOut(pDoc->Edges[i].verts[0]->x-deltaX/2 - name.GetLength() * 4, pDoc->Edges[i].verts[0]->y-deltaY/2 - radius * 1.0, name, name.GetLength());
+	}
+	for (int i = 0; i < pDoc->Verticals.size(); i++) {
+		CString name = Convertio(pDoc->Verticals[i].GetName());
+		RECT rect = { pDoc->Verticals[i].x - name.GetLength() * 4,pDoc->Verticals[i].y + radius * 1.5,pDoc->Verticals[i].x + name.GetLength() * 4,pDoc->Verticals[i].y + radius * 1.5 + 20 };
+		pDC->DrawText(ToWString(pDoc->Verticals[i].GetName()).c_str(), pDoc->Verticals[i].GetName().size(), &rect, DT_CENTER);
 	}
 	if (onDrawState) {
 		if (pDoc->ChosenType == 'E') {
@@ -332,6 +334,7 @@ BOOL CGraphCreaterView::PreTranslateMessage(MSG* pMsg)
 				pDoc->temp->ChangeName(ConvertioToSTD(text));
 				m_edit.DestroyWindow();
 				pDoc->temp = nullptr;
+				pDoc->Modified();
 				Invalidate();
 			}
 		}

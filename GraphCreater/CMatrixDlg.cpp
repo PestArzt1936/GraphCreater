@@ -155,6 +155,7 @@ void CMatrixDlg::OnPaint()
 	// Не вызывать CDialogEx::OnPaint() для сообщений рисования
 	CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
 	CPen* pOldPen = dc.SelectObject(&pen);
+	dc.SetBkMode(TRANSPARENT);
 	DrawLines(&dc);
 	DrawNames(&dc);
 	DrawNumbers(&dc);

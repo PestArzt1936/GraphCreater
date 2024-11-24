@@ -7,7 +7,6 @@
 #define IDR_MAINFRAME                   128
 #define IDR_GraphCreaterTYPE            130
 #define IDD_CMATRIXDLG                  312
-#define IDC_CUSTOMBOX                   1004
 #define ID_Vertical                     32773
 #define ID_EDGE                         32774
 #define ID_CHANGENAME                   32783
