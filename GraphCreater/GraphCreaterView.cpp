@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CGraphCreaterView, CView)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
+	ON_EN_CHANGE(5, &CGraphCreaterView::OnEnChangeMyEdit)
 END_MESSAGE_MAP()
 
 // Создание или уничтожение CGraphCreaterView
@@ -230,6 +231,10 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 			}
 		for (int i = 0; i < pDoc->Verticals.size();i++) {
 			RECT rect = { pDoc->Verticals[i].x - pDoc->Verticals[i].GetName().size() * 4,pDoc->Verticals[i].y + radius * 1.5,pDoc->Verticals[i].x + pDoc->Verticals[i].GetName().size() * 4,pDoc->Verticals[i].y + radius * 1.5 + 20};
+			CPaintDC DC(this);
+			CSize size=DC.GetTextExtent(_T("mmmmmmmmmmmmmmmmmmmm"));
+			rect.left = rect.left - size.cx / 2;
+			rect.right = rect.right + size.cx / 2;
 			if (PtInRect(&rect, point)) {
 					pDoc->temp = &pDoc->Verticals[i];
 					rect.left = rect.left - 20;
@@ -246,7 +251,20 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 	}
 	CView::OnLButtonDown(nFlags, point);
 }
-
+void CGraphCreaterView::OnEnChangeMyEdit() {
+	CString text;
+	m_edit.GetWindowText(text);
+	if (text.GetLength() <= 20) {
+		CDC* pDC = GetDC();
+		CSize textSize = pDC->GetTextExtent(text);
+		CRect rect;
+		m_edit.GetWindowRect(&rect);
+		ScreenToClient(&rect);
+		rect.right = rect.left + textSize.cx + 15;
+		m_edit.MoveWindow(&rect);
+		ReleaseDC(pDC);
+	}
+}
 
 void CGraphCreaterView::OnLButtonUp(UINT nFlags, CPoint point)
 {
@@ -314,6 +332,7 @@ BOOL CGraphCreaterView::PreTranslateMessage(MSG* pMsg)
 				pDoc->temp->ChangeName(ConvertioToSTD(text));
 				m_edit.DestroyWindow();
 				pDoc->temp = nullptr;
+				Invalidate();
 			}
 		}
 		else if (pMsg->wParam == VK_ESCAPE) {

@@ -298,9 +298,11 @@ void CGraphCreaterDoc::OnFileOpen()
 #else
 #endif
 	CFileDialog MyDialog(true, NULL, NULL, NULL, szFilter, NULL, 0, true);
+	OnFileNew();
 	if (MyDialog.DoModal() == IDOK) {
 		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
 		m_SavedFilePath = MyDialog.GetPathName();
+		
 		LoadVerticalsFromFile(m_SavedFilePath);
 		LoadEdgesFromFile(m_SavedFilePath);
 		ChangeWindowText(m_SavedFilePath);

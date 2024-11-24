@@ -227,7 +227,18 @@ void CGraphCreaterApp::ChangeName() {
 #endif // DEBUG
 }
 void CGraphCreaterApp::CreateMatrix() {
-
+#ifdef _DEBUG
+	AfxMessageBox(_T("Создание матрицы"));
+#else
+#endif 
+	CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
+	CGraphCreaterView* pView = (CGraphCreaterView*)pFrame->GetActiveView();
+	CGraphCreaterDoc* pDoc = pView->GetDocument();
+	CMatrixDlg Dialog;
+	Dialog.SetDocument(pDoc);
+	if (Dialog.DoModal() == IDOK) {
+		
+	}
 }
 
 // Обработчики сообщений CGraphCreaterApp
