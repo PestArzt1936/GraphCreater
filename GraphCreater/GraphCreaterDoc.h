@@ -18,7 +18,8 @@ protected: // создать только из сериализации
 public:
 	char ChosenType = 'M';
 	Vertical Necessary;
-	Vertical* temp;
+	Edge* tempE;
+	Vertical* tempV;
 	std::deque<Vertical> Verticals;
 	std::vector<Edge> Edges;
 	CString m_SavedFilePath;

@@ -175,7 +175,6 @@ void CGraphCreaterDoc::SaveToJSON(CString filename) {
 	ChangeWindowText(m_SavedFilePath);
 }
 void CGraphCreaterDoc::OnFileNew() {
-	AfxMessageBox(_T("CDoc"));
 	SaveAsk();
 	SetModifiedFlag(false);
 	for (int i = Edges.size()-1; i >= 0; i--) {

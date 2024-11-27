@@ -131,7 +131,8 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	}
 	for (int i = 0; i < pDoc->Verticals.size(); i++) {
 		CString name = Convertio(pDoc->Verticals[i].GetName());
-		RECT rect = { pDoc->Verticals[i].x - name.GetLength() * 4,pDoc->Verticals[i].y + radius * 1.5,pDoc->Verticals[i].x + name.GetLength() * 4,pDoc->Verticals[i].y + radius * 1.5 + 20 };
+		CSize size = pDC->GetTextExtent(ToWString(pDoc->Verticals[i].GetName()).c_str());
+		RECT rect = { pDoc->Verticals[i].x - size.cx/2,pDoc->Verticals[i].y + radius * 1.5,pDoc->Verticals[i].x + size.cx/2,pDoc->Verticals[i].y + radius * 1.5 + 20 };
 		pDC->DrawText(ToWString(pDoc->Verticals[i].GetName()).c_str(), pDoc->Verticals[i].GetName().size(), &rect, DT_CENTER);
 	}
 	if (onDrawState) {
@@ -206,7 +207,7 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 	else if (pDoc->ChosenType=='M') {
 		for (int i = 0; i < pDoc->Verticals.size();i++) {
 			if ((pDoc->Verticals[i].x - 15 <= point.x && pDoc->Verticals[i].x + 15 >= point.x) && (pDoc->Verticals[i].y - 15 <= point.y && pDoc->Verticals[i].y + 15 >= point.y) && onDrawState == false) {
-				pDoc->temp = &pDoc->Verticals[i];
+				pDoc->tempV = &pDoc->Verticals[i];
 				onDrawState = true;
 				Invalidate();
 				break;
@@ -231,14 +232,14 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 		if (m_edit.GetSafeHwnd() != nullptr){
 				m_edit.DestroyWindow();
 			}
+		CPaintDC DC(this);
 		for (int i = 0; i < pDoc->Verticals.size();i++) {
 			RECT rect = { pDoc->Verticals[i].x - pDoc->Verticals[i].GetName().size() * 4,pDoc->Verticals[i].y + radius * 1.5,pDoc->Verticals[i].x + pDoc->Verticals[i].GetName().size() * 4,pDoc->Verticals[i].y + radius * 1.5 + 20};
-			CPaintDC DC(this);
-			CSize size=DC.GetTextExtent(_T("mmmmmmmmmmmmmmmmmmmm"));
+			CSize size=DC.GetTextExtent(ToWString(pDoc->Verticals[i].GetName()).c_str());
 			rect.left = rect.left - size.cx / 2;
 			rect.right = rect.right + size.cx / 2;
 			if (PtInRect(&rect, point)) {
-					pDoc->temp = &pDoc->Verticals[i];
+					pDoc->tempV = &pDoc->Verticals[i];
 					rect.left = rect.left - 20;
 					rect.right = rect.right + 20;
 					m_edit.Create(WS_CHILDWINDOW | WS_VISIBLE | ES_CENTER | WS_BORDER, rect, this, 5);
@@ -246,10 +247,32 @@ void CGraphCreaterView::OnLButtonDown(UINT nFlags, CPoint point){
 					m_edit.SetFocus();
 					m_edit.SetOwner(this);
 					m_edit.SetDlgCtrlID(5);
-					Invalidate();	
+					m_edit.UpdateWindow();
+					Invalidate();
 				break;
 			}
 		}
+			for (int i = 0; i < pDoc->Edges.size(); i++) {
+				int deltaX = pDoc->Edges[i].verts[0]->x - pDoc->Edges[i].verts[1]->x;
+				int deltaY = pDoc->Edges[i].verts[0]->y - pDoc->Edges[i].verts[1]->y;
+				CSize size = DC.GetTextExtent(ToWString(pDoc->Edges[i].GetName()).c_str());
+				RECT rect = { pDoc->Edges[i].verts[0]->x - deltaX / 2 - size.cx / 2,pDoc->Edges[i].verts[0]->y - deltaY / 2 - size.cy / 2,
+					pDoc->Edges[i].verts[0]->x - deltaX / 2 + size.cx / 2,pDoc->Edges[i].verts[0]->y - deltaY / 2 + size.cy / 2 };
+				if (PtInRect(&rect, point)) {
+					pDoc->tempE = &pDoc->Edges[i];
+					rect.left = rect.left - 20;
+					rect.right = rect.right + 20;
+					rect.top = rect.top - radius;
+					rect.bottom = rect.bottom - radius;
+					m_edit.Create(WS_CHILDWINDOW | WS_VISIBLE | ES_CENTER | WS_BORDER, rect, this, 5);
+					m_edit.SetWindowText(ToWString(pDoc->Edges[i].GetName()).c_str());
+					m_edit.SetFocus();
+					m_edit.SetOwner(this);
+					m_edit.SetDlgCtrlID(5);
+					Invalidate();
+					break;
+				}
+			}
 	}
 	CView::OnLButtonDown(nFlags, point);
 }
@@ -262,7 +285,7 @@ void CGraphCreaterView::OnEnChangeMyEdit() {
 		CRect rect;
 		m_edit.GetWindowRect(&rect);
 		ScreenToClient(&rect);
-		rect.right = rect.left + textSize.cx + 15;
+		rect.right = rect.left + textSize.cx + 20;
 		m_edit.MoveWindow(&rect);
 		ReleaseDC(pDC);
 	}
@@ -291,10 +314,10 @@ void CGraphCreaterView::OnLButtonUp(UINT nFlags, CPoint point)
 			if (!VertFound) {
 				onDrawState = false;
 			}
-			pDoc->temp = nullptr;
+			pDoc->tempV = nullptr;
 		}
 		else if (pDoc->ChosenType=='M') {
-			pDoc->temp = nullptr;
+			pDoc->tempV = nullptr;
 			pDoc->Modified();
 			onDrawState = false;
 		}
@@ -314,8 +337,8 @@ void CGraphCreaterView::OnMouseMove(UINT nFlags, CPoint point)
 			temp.verts[1]->y = point.y;
 		}
 		else if (pDoc->ChosenType=='M') {
-			pDoc->temp->x = point.x;
-			pDoc->temp->y = point.y;
+			pDoc->tempV->x = point.x;
+			pDoc->tempV->y = point.y;
 		}
 		Invalidate();
 	}
@@ -329,13 +352,28 @@ BOOL CGraphCreaterView::PreTranslateMessage(MSG* pMsg)
 		CGraphCreaterDoc* pDoc = GetDocument();
 		if (pMsg->wParam == VK_RETURN) {
 			if (m_edit.GetSafeHwnd() != nullptr) {
-				CString text;
-				m_edit.GetWindowText(text);
-				pDoc->temp->ChangeName(ConvertioToSTD(text));
-				m_edit.DestroyWindow();
-				pDoc->temp = nullptr;
-				pDoc->Modified();
-				Invalidate();
+				if (pDoc->tempV != nullptr) {
+					CString text;
+					m_edit.GetWindowText(text);
+					if (ConvertioToSTD(text) != pDoc->tempV->GetName()) {
+						pDoc->tempV->ChangeName(ConvertioToSTD(text));
+						pDoc->Modified();
+					}
+					m_edit.DestroyWindow();
+					pDoc->tempV = nullptr;
+					Invalidate();
+				}
+				else if (pDoc->tempE != nullptr) {
+					CString text;
+					m_edit.GetWindowText(text);
+					if (ConvertioToSTD(text) != pDoc->tempE->GetName()) {
+						pDoc->tempE->ChangeName(ConvertioToSTD(text));
+						pDoc->Modified();
+					}
+					m_edit.DestroyWindow();
+					pDoc->tempE = nullptr;
+					Invalidate();
+				}
 			}
 		}
 		else if (pMsg->wParam == VK_ESCAPE) {
