@@ -30,6 +30,7 @@ public:
 	void ChoseOfMove();
 	void ChangeName();
 	void CreateMatrix();
+	void CreateStateMachine();
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
 };

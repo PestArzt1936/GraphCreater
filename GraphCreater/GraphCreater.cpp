@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CGraphCreaterApp, CWinApp)
 	ON_COMMAND(ID_CHANGENAME, &CGraphCreaterApp::ChangeName)
 	ON_COMMAND(ID_CREATEMATRIX, &CGraphCreaterApp::CreateMatrix)
 	ON_COMMAND(ID_BUTTONCURSOR,&CGraphCreaterApp::ChoseOfMove)
+	ON_COMMAND(STATEMACHINE,&CGraphCreaterApp::CreateStateMachine)
 END_MESSAGE_MAP()
 
 
@@ -239,6 +240,11 @@ void CGraphCreaterApp::CreateMatrix() {
 	if (Dialog.DoModal() == IDOK) {
 		
 	}
+}
+void CGraphCreaterApp::CreateStateMachine() {
+	CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
+	CGraphCreaterView* pView = (CGraphCreaterView*)pFrame->GetActiveView();
+	pView->GetDocument()->CreateStateMachine();
 }
 
 // Обработчики сообщений CGraphCreaterApp

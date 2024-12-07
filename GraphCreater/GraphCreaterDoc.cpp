@@ -21,6 +21,7 @@
 #define new DEBUG_NEW
 #endif
 static TCHAR BASED_CODE szFilter[] = _T("Файл JSON(*.json)|*.json|");
+static TCHAR BASED_CODE MachineFilter[] = _T("Файл CPP(*.cpp)|*.cpp|");
 // CGraphCreaterDoc
 
 IMPLEMENT_DYNCREATE(CGraphCreaterDoc, CDocument)
@@ -147,9 +148,14 @@ void CGraphCreaterDoc::OnFileSaveAs() {
 			FileName.Append(GetFilterType(MyDialog.GetOFN().nFilterIndex));
 		m_SavedFilePath = FileName;
 		SaveToJSON(FileName);
+		m_SavedFilePath.Replace(GetFilterType(MyDialog.GetOFN().nFilterIndex), _T(""));
 	}
 }
 void CGraphCreaterDoc::SaveToJSON(CString filename) {
+	int check = filename.Find(_T(".json"));
+	int size = filename.GetLength();
+	if (check == -1 || filename.GetLength() - 4 - 1 != check)
+		filename.Append(_T(".json"));
 	std::ofstream file(filename);
 	if (!file.is_open()) {
 		throw std::runtime_error("Can't load file");
@@ -172,6 +178,7 @@ void CGraphCreaterDoc::SaveToJSON(CString filename) {
 		throw std::runtime_error("Unpredictable ERROR");
 	}
 	SetModifiedFlag(false);
+	m_SavedFilePath.Replace(_T(".json"), _T(""));
 	ChangeWindowText(m_SavedFilePath);
 }
 void CGraphCreaterDoc::OnFileNew() {
@@ -299,16 +306,14 @@ void CGraphCreaterDoc::OnFileOpen()
 	CFileDialog MyDialog(true, NULL, NULL, NULL, szFilter, NULL, 0, true);
 	OnFileNew();
 	if (MyDialog.DoModal() == IDOK) {
-		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
 		m_SavedFilePath = MyDialog.GetPathName();
-		
 		LoadVerticalsFromFile(m_SavedFilePath);
 		LoadEdgesFromFile(m_SavedFilePath);
+		m_SavedFilePath.Replace(GetFilterType(MyDialog.GetOFN().nFilterIndex), _T(""));
 		ChangeWindowText(m_SavedFilePath);
 		Invalidate();
 	}
 }
-
 
 BOOL CGraphCreaterDoc::CanCloseFrame(CFrameWnd* pFrame)
 {
@@ -324,4 +329,37 @@ BOOL CGraphCreaterDoc::CanCloseFrame(CFrameWnd* pFrame)
 			return false;
 	}
 	return CDocument::CanCloseFrame(pFrame);
+}
+
+void CGraphCreaterDoc::CreateStateMachine() {
+	CFileDialog MyDialog(false,NULL,m_SavedFilePath,NULL,MachineFilter,NULL,0,true);
+	if (MyDialog.DoModal() == IDOK) {
+		CString path = MyDialog.GetPathName();
+		CString type = _T(".cpp");
+		int check = path.Find(type);
+		if (check == -1 || path.GetLength() - 3 - 1 != check) {
+			path.Append(type);
+		}
+		SaveCPP(path);
+	}
+}
+void CGraphCreaterDoc::SaveCPP(CString path) {
+	std::ofstream file(path);
+	if (!file.is_open()) {
+		throw std::runtime_error("Can't load file");
+	}
+	if (file.is_open()) {
+		std::string machine = "#include <string>\n#include <iostream>\n\nclass StateMachine{\npublic:\n\tvirtual void Handle(std::string& action,StateMachine* SM)=0;\n};\n\n";
+		for (auto i : Verticals) {
+			machine.append("class "+ i.GetName()+" : public StateMachine{\npublic:\n\tvoid Handle(std::string& action,StateMachine* SM) override{\n");
+			for (auto e : Edges) {
+				if (e.verts[0]->GetName() == i.GetName()) {
+					machine.append("\t\tif(action==\"" + e.GetName() + "\"){\n\t\t\tSM=new "+e.verts[1]->GetName()+"();\n\t\t}\n");
+				}
+			}
+			machine.append("\t}\n};\n\n");
+		}
+		file.write(machine.c_str(), machine.size());
+		file.close();
+	}
 }

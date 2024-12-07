@@ -45,6 +45,8 @@ public:
 	void ChangeWindowText(CString filename);
 	void Modified();
 	void SaveToJSON(CString filename);
+	void CreateStateMachine();
+	void SaveCPP(CString path);
 	CString GetFilterType(DWORD num);
 	void LoadVerticalsFromFile(CString filename);
 	void LoadEdgesFromFile(CString filename);
