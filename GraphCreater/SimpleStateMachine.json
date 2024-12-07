@@ -1,0 +1,31 @@
+{
+    "edges": [
+        {
+            "first": "Start",
+            "name": "x1",
+            "second": "Left"
+        },
+        {
+            "first": "Start",
+            "name": "x2",
+            "second": "Right"
+        }
+    ],
+    "verticals": [
+        {
+            "X": 459,
+            "Y": 183,
+            "name": "Start"
+        },
+        {
+            "X": 297,
+            "Y": 398,
+            "name": "Left"
+        },
+        {
+            "X": 564,
+            "Y": 410,
+            "name": "Right"
+        }
+    ]
+}
