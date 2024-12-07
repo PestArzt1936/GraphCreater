@@ -147,7 +147,6 @@ void CGraphCreaterView::OnDraw(CDC* pDC)
 	}
 	DeleteObject(hBrush);
 	DeleteObject(hPen);
-	// TODO: добавьте здесь код отрисовки для собственных данных
 }
 
 
@@ -356,6 +355,10 @@ BOOL CGraphCreaterView::PreTranslateMessage(MSG* pMsg)
 					CString text;
 					m_edit.GetWindowText(text);
 					if (ConvertioToSTD(text) != pDoc->tempV->GetName()) {
+						if (ConvertioToSTD(text).size() == 0) {
+							AfxMessageBox(_T("Имя не может быть пустым. Попробуйте другое имя"));
+							return true;
+						}
 						for (auto i : pDoc->Verticals)
 							if (i.GetName() == ConvertioToSTD(text)) {
 								AfxMessageBox(_T("Имя должно быть уникальным. Попробуйте дургое имя"));
@@ -372,6 +375,10 @@ BOOL CGraphCreaterView::PreTranslateMessage(MSG* pMsg)
 					CString text;
 					m_edit.GetWindowText(text);
 					if (ConvertioToSTD(text) != pDoc->tempE->GetName()) {
+						if (ConvertioToSTD(text).size() == 0) {
+							AfxMessageBox(_T("Имя не может быть пустым. Попробуйте другое имя"));
+							return true;
+						}
 						for (auto i : pDoc->Edges)
 							if (i.GetName() == ConvertioToSTD(text)) {
 								AfxMessageBox(_T("Имя должно быть уникальным. Попробуйте дургое имя"));
