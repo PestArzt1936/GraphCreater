@@ -145,8 +145,8 @@ void CGraphCreaterDoc::OnFileSaveAs() {
 		int size = FileName.GetLength();
 		if(check==-1 || FileName.GetLength()-4-1!=check)
 			FileName.Append(GetFilterType(MyDialog.GetOFN().nFilterIndex));
-		SaveToJSON(FileName);
 		m_SavedFilePath = FileName;
+		SaveToJSON(FileName);
 	}
 }
 void CGraphCreaterDoc::SaveToJSON(CString filename) {
