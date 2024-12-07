@@ -356,6 +356,11 @@ BOOL CGraphCreaterView::PreTranslateMessage(MSG* pMsg)
 					CString text;
 					m_edit.GetWindowText(text);
 					if (ConvertioToSTD(text) != pDoc->tempV->GetName()) {
+						for (auto i : pDoc->Verticals)
+							if (i.GetName() == ConvertioToSTD(text)) {
+								AfxMessageBox(_T("Имя должно быть уникальным. Попробуйте дургое имя"));
+								return true;
+							}
 						pDoc->tempV->ChangeName(ConvertioToSTD(text));
 						pDoc->Modified();
 					}
@@ -367,6 +372,11 @@ BOOL CGraphCreaterView::PreTranslateMessage(MSG* pMsg)
 					CString text;
 					m_edit.GetWindowText(text);
 					if (ConvertioToSTD(text) != pDoc->tempE->GetName()) {
+						for (auto i : pDoc->Edges)
+							if (i.GetName() == ConvertioToSTD(text)) {
+								AfxMessageBox(_T("Имя должно быть уникальным. Попробуйте дургое имя"));
+								return true;
+							}
 						pDoc->tempE->ChangeName(ConvertioToSTD(text));
 						pDoc->Modified();
 					}
