@@ -147,9 +147,14 @@ void CGraphCreaterDoc::OnFileSaveAs() {
 			FileName.Append(GetFilterType(MyDialog.GetOFN().nFilterIndex));
 		m_SavedFilePath = FileName;
 		SaveToJSON(FileName);
+		m_SavedFilePath.Replace(GetFilterType(MyDialog.GetOFN().nFilterIndex), _T(""));
 	}
 }
 void CGraphCreaterDoc::SaveToJSON(CString filename) {
+	int check = filename.Find(_T(".json"));
+	int size = filename.GetLength();
+	if (check == -1 || filename.GetLength() - 4 - 1 != check)
+		filename.Append(_T(".json"));
 	std::ofstream file(filename);
 	if (!file.is_open()) {
 		throw std::runtime_error("Can't load file");
@@ -172,6 +177,7 @@ void CGraphCreaterDoc::SaveToJSON(CString filename) {
 		throw std::runtime_error("Unpredictable ERROR");
 	}
 	SetModifiedFlag(false);
+	m_SavedFilePath.Replace(_T(".json"),_T(""));
 	ChangeWindowText(m_SavedFilePath);
 }
 void CGraphCreaterDoc::OnFileNew() {
@@ -299,16 +305,14 @@ void CGraphCreaterDoc::OnFileOpen()
 	CFileDialog MyDialog(true, NULL, NULL, NULL, szFilter, NULL, 0, true);
 	OnFileNew();
 	if (MyDialog.DoModal() == IDOK) {
-		CFrameWnd* pFrame = (CFrameWnd*)AfxGetMainWnd();
 		m_SavedFilePath = MyDialog.GetPathName();
-		
 		LoadVerticalsFromFile(m_SavedFilePath);
 		LoadEdgesFromFile(m_SavedFilePath);
+		m_SavedFilePath.Replace(GetFilterType(MyDialog.GetOFN().nFilterIndex), _T(""));
 		ChangeWindowText(m_SavedFilePath);
 		Invalidate();
 	}
 }
-
 
 BOOL CGraphCreaterDoc::CanCloseFrame(CFrameWnd* pFrame)
 {
